@@ -4,8 +4,8 @@ import {prepareScrollVideo} from './video.js';
 import {installChapterNavigation} from './navigation.js?v=20261015-17';
 import {installResponsiveLayout,installInfoDialogs} from './responsive.js?v=20261014-15';
 import {installCareerTimeline} from './timeline.js?v=20261014-15';
-import {isMobileDevice} from './device.js';
-import {resolveLanguage,languageUrl,text,localizedTechnology} from './i18n.js?v=20261015-16';
+import {installSectionMotion} from './motion.js?v=20261015-18';
+import {resolveLanguage,languageUrl,text,localizedTechnology} from './i18n.js?v=20261015-18';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const body=document.body, media=$('#journey'), film=$('.film');
@@ -32,6 +32,7 @@ function applyLanguage(){
  if(counts)setCalculationDate();
  describe?.(describedIndex??0);
  refreshTechnologySamples?.();
+ sectionMotion?.refreshLabel();
  layout.refresh();
 }
 function changeLanguage(next){language=next;try{localStorage.setItem('robson-language',language);}catch{}history.replaceState(history.state,'',languageUrl(location.href,language));applyLanguage();}
@@ -43,8 +44,8 @@ installInfoDialogs();
 const systemMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let storedMotion=null;try{storedMotion=localStorage.getItem('robson-reduced-motion');}catch{}
 let reduced=storedMotion===null?systemMotion.matches:storedMotion==='true';
-let cubeController=null;
-function applyMotion(){body.classList.toggle('reduced-motion',reduced);$('#reduce-motion').setAttribute('aria-pressed',String(reduced));$('#reduce-motion').textContent=text(language,reduced?'enableMotion':'reduceMotion');cubeController?.setReducedMotion(reduced);if(reduced)resetParallax();}
+let cubeController=null,sectionMotion=null;
+function applyMotion(){body.classList.toggle('reduced-motion',reduced);$('#reduce-motion').setAttribute('aria-pressed',String(reduced));$('#reduce-motion').textContent=text(language,reduced?'enableMotion':'reduceMotion');cubeController?.setReducedMotion(reduced);sectionMotion?.refresh();}
 $('#reduce-motion').addEventListener('click',()=>{reduced=!reduced;storedMotion=String(reduced);try{localStorage.setItem('robson-reduced-motion',String(reduced));}catch{}applyMotion();onScroll();});
 systemMotion.addEventListener('change',e=>{if(storedMotion===null){reduced=e.matches;applyMotion();}});
 $('#current-year').textContent=new Date().getFullYear();
@@ -119,22 +120,12 @@ function animateNumber(el,target,delay,generation){setTimeout(()=>{
  requestAnimationFrame(frame);
  },reduced?0:delay);}
 function startCounts(){counterStarted=true;const generation=++counterGeneration;['years','days','hours'].forEach((key,i)=>animateNumber($(`[data-count="${key}"]`),counts[key],i*620,generation));}
-const metricObserver=new IntersectionObserver(entries=>{for(const entry of entries){parallaxVisible=entry.isIntersecting;if(entry.isIntersecting){if(!counterStarted)startCounts();startParallax();}}},{threshold:.2});
-let parallaxVisible=false,parallaxFrame=0,px=0,py=0,tx=0,ty=0;
-function resetParallax(){tx=ty=px=py=0;$('.metrics-world').style.transform='none';$$('.metric').forEach(el=>el.style.transform='none');}
-function startParallax(){if(!parallaxFrame&&parallaxVisible&&!reduced)parallaxFrame=requestAnimationFrame(parallaxLoop);}
-function parallaxLoop(){parallaxFrame=0;if(!parallaxVisible||reduced)return;px+=(tx-px)*.06;py+=(ty-py)*.06;$('.metrics-world').style.transform=`translate3d(${px*-19}px,${py*-15}px,0)`;
- $$('.metric').forEach((el,i)=>{const power=i===2?13:7;el.style.transform=`translate3d(${px*power}px,${py*power}px,0) rotateY(${px*3}deg) rotateX(${-py*2}deg)`;});
- if(Math.abs(tx-px)+Math.abs(ty-py)>.002)startParallax();}
-$('#numeros').addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=e.currentTarget.getBoundingClientRect();tx=(e.clientX-r.left)/r.width*2-1;ty=(e.clientY-r.top)/r.height*2-1;startParallax();});
-$('#numeros').addEventListener('pointerleave',()=>{tx=ty=0;startParallax();});
-let motionBase=null;
-function orientation(e){if(e.beta===null||e.gamma===null||reduced||!parallaxVisible)return;if(!motionBase)motionBase=[e.beta,e.gamma];const angle=screen.orientation?.angle||0;const x=(e.gamma-motionBase[1])/18,y=(e.beta-motionBase[0])/22;tx=Math.max(-1,Math.min(1,angle===90?y:angle===270?-y:x));ty=Math.max(-1,Math.min(1,angle===90?-x:angle===270?x:y));startParallax();}
-function listenMotion(){addEventListener('deviceorientation',orientation,{passive:true});}
-if(isMobileDevice(navigator)&&typeof DeviceOrientationEvent!=='undefined'){
- if(typeof DeviceOrientationEvent.requestPermission==='function'){$('#motion-permission').hidden=false;$('#motion-permission').addEventListener('click',async()=>{try{if(await DeviceOrientationEvent.requestPermission()==='granted'){listenMotion();$('#motion-permission').hidden=true;}else $('#motion-permission').textContent=text(language,'motionDenied');}catch{$('#motion-permission').textContent=text(language,'motionUnavailable');}});}else listenMotion();
-}
-addEventListener('orientationchange',()=>{motionBase=null;resetParallax();});metricObserver.observe($('#metrics'));
+const metricObserver=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)&&!counterStarted)startCounts();},{threshold:.2});
+metricObserver.observe($('#metrics'));
+sectionMotion=installSectionMotion({isReduced:()=>reduced,text:key=>text(language,key),onChange:()=>layout.refresh(),onEnable:()=>{
+ reduced=false;storedMotion='false';try{localStorage.setItem('robson-reduced-motion','false');}catch{}
+ applyMotion();
+}});
 function refreshCounts(){const now=saoPauloDate();if(counts.asOf!==now){counts=calculateExperience(now);setCalculationDate();if(counterStarted){counterGeneration++;$$('.metric').forEach(el=>{el.classList.remove('counting');el.classList.add('shown','landed');});['years','days','hours'].forEach(key=>$(`[data-count="${key}"]`).textContent=format.format(counts[key]));}}}
 setInterval(refreshCounts,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshCounts();onScroll();}});
 

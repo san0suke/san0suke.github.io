@@ -15,9 +15,10 @@
   <link rel="stylesheet" href="./readability.css?v=20261014-15">
   <link rel="stylesheet" href="./timeline.css?v=20261014-15">
   <link rel="stylesheet" href="./language.css?v=20261015-16">
+  <link rel="stylesheet" href="./motion.css?v=20261015-18">
   <noscript><style>.loader{display:none!important}body.is-loading{overflow:auto}.section{height:auto!important;min-height:100svh!important}</style></noscript>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
-  <script type="module" src="./js/app.js?v=20261015-17"></script>
+  <script type="module" src="./js/app.js?v=20261015-18"></script>
 </head>
 <body class="is-loading">
   <a class="skip-link" href="#sobre" data-i18n="skip">Pular para o conteúdo</a>
@@ -42,7 +43,7 @@
         <p class="eyebrow reveal" data-i18n="heroEyebrow">SOFTWARE ENGINEER · CURITIBA, BRASIL</p>
         <h1 id="hero-title" data-i18n="heroTitle">Engenharia mobile.<br><em>Experiências<br>que conectam.</em></h1>
         <p class="hero-description" data-i18n="heroDescription">Sou Robson. Transformo complexidade em produtos digitais que fazem sentido para as pessoas.</p>
-        <a class="outline-link" href="#experiencia"><span data-i18n="heroCta">CONHEÇA MEU TRABALHO</span> <span><svg class="icon" aria-hidden="true" focusable="false"><use href="./assets/icons/ui.svg#arrow-up-right"/></svg></span></a>
+        <button id="motion-permission" class="outline-link" type="button" hidden aria-pressed="false"><span data-motion-label>Ativar movimentação</span><svg class="icon" aria-hidden="true" focusable="false"><use href="./assets/icons/ui.svg#arrow-up-right"/></svg></button>
       </div>
       <div class="hero-bottom"><span>iOS &nbsp; / &nbsp; ANDROID &nbsp; / &nbsp; SOFTWARE</span><a href="#sobre" class="scroll-hint"><i></i> <span data-i18n="heroScroll">ROLE PARA AVANÇAR</span> <span><svg class="icon" aria-hidden="true" focusable="false"><use href="./assets/icons/ui.svg#arrow-down"/></svg></span></a><span class="hero-edition" data-i18n="heroEdition">IDEIAS. ENGENHARIA. EXPERIÊNCIAS.</span></div>
     </section>
@@ -107,7 +108,7 @@
         <div class="metric metric-days" id="metric-days"><span class="metric-value"><span data-count="days">0</span></span><span class="metric-label" data-i18n="days">DIAS ÚTEIS ESTIMADOS</span></div>
         <div class="metric metric-hours" id="metric-hours"><span class="metric-value"><span data-count="hours">0</span><sup>+</sup></span><span class="metric-label" data-i18n="hours">HORAS ESTIMADAS DE DEDICAÇÃO</span></div>
       </div>
-      <div class="metric-foot"><span class="live-indicator"><i></i> <span data-i18n="live">UMA HISTÓRIA QUE CONTINUA</span></span><button id="motion-permission" class="text-link" hidden><span data-i18n="motionPermission">Ativar movimento do dispositivo</span> <svg class="icon" aria-hidden="true" focusable="false"><use href="./assets/icons/ui.svg#arrow-up-right"/></svg></button>
+      <div class="metric-foot"><span class="live-indicator"><i></i> <span data-i18n="live">UMA HISTÓRIA QUE CONTINUA</span></span>
       <button class="method-button" type="button" data-open-dialog="calculation-dialog"><span data-i18n="method">Como calculamos</span> <span aria-hidden="true">+</span></button></div>
     </section>
 

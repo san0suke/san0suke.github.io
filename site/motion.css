@@ -1,0 +1,15 @@
+/* Keep the initial action legible and the same size after activation. */
+.hero #motion-permission {
+  min-height:48px; max-width:100%; gap:20px; padding:14px 20px;
+  margin-top:0; border:1px solid #ffe0ae; border-radius:3px;
+  background:transparent; color:#fff; text-align:left;
+  font:500 11px/1.4 DM,Arial,sans-serif; letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.hero #motion-permission [data-motion-label] {font:inherit; color:inherit; line-height:1.4;}
+.hero #motion-permission .icon {width:17px; height:17px; flex:none; margin:0; color:var(--gold);}
+.hero #motion-permission:disabled {cursor:default; opacity:.8;}
+.hero #motion-permission[aria-pressed="true"] {border-color:var(--mint); color:var(--mint);}
+@media (max-height:500px) and (orientation:landscape) {
+  .hero #motion-permission {min-height:44px; padding:10px 14px; font-size:10px;}
+}
