@@ -23,7 +23,12 @@ jobs:
         run: |
           mkdir -p _site
           unzip -q portfolio-site.zip -d _site
+          curl --fail --location --retry 3 --max-time 180 \
+            https://robson-portfolio.sistemas-robson.chatgpt.site/assets/journey.mp4 \
+            --output _site/assets/journey.mp4
+          sed -i 's|https://robson-portfolio.sistemas-robson.chatgpt.site/assets/journey.mp4|./assets/journey.mp4|g' _site/index.html
           test -s _site/index.html
+          test -s _site/assets/journey.mp4
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
